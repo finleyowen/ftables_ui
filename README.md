@@ -1,3 +1,3 @@
-# bettersheets_ui
+# BetterSheets UI
 
-A new Flutter project.
+User interface for BetterSheets, the spreadsheet application that is better.
