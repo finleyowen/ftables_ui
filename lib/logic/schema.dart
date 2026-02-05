@@ -4,6 +4,9 @@ library;
 import 'dart:collection';
 import 'package:bettersheets_ui/logic/data_type.dart';
 
+const columnSchemaRegExpSource =
+    r"^([a-zA-Z][a-zA-Z0-9_]+): ([^ =\n]+)( = .+)?$";
+
 /// A table schema stores information about a table, including the table name,
 /// column schemas, and constraint schemas.
 class TableSchema {
@@ -11,7 +14,7 @@ class TableSchema {
   final HashMap<String, ColumnSchema> _columns;
   final List<ConstraintSchema>? constraints;
 
-  ColumnSchema? getColumn(String columnName) => _columns[columnName];
+  Iterable<MapEntry<String, ColumnSchema>> get columns => _columns.entries;
 
   const TableSchema({
     required this.tableName,
@@ -54,29 +57,60 @@ class PKConstraintSchema extends UniqueConstraintSchema {
 }
 
 /// A column schema stores information about a column, including its name, the
-/// type of data it stores and its nullability, the default value if applicable,
-/// and the uniqueness of the column.
+/// type of data it stores and its nullability, and the default value if
+/// applicable.
 class ColumnSchema<T> {
   final String columnName;
   final DataType<T> dataType;
   final T? defaultValue;
-  late final bool _unique;
 
   ColumnSchema({
     required this.columnName,
     required this.dataType,
     this.defaultValue,
-    bool unique = false,
-  }) {
-    // call the 'unique' setter (might throw an ArgumentError)
-    this.unique = unique;
-  }
+  });
 
-  bool get unique => _unique;
+  static ColumnSchema? fromString(String input) {
+    final columnSchemaRe = RegExp(columnSchemaRegExpSource);
+    final columnSchemaMatch = columnSchemaRe.firstMatch(input);
 
-  set unique(bool val) {
-    if (dataType is DoubleDataType) {
-      throw ArgumentError("Data type $dataType cannot be unique!");
+    if (columnSchemaMatch == null) {
+      return null;
     }
+
+    final columnName = columnSchemaMatch.group(1);
+    final dtypeStr = columnSchemaMatch.group(2);
+    final defaultStr = columnSchemaMatch.group(3)?.substring(3);
+
+    if (columnName == null || dtypeStr == null) {
+      return null;
+    }
+
+    final dataType = DataType.fromString(dtypeStr);
+    if (dataType == null) {
+      return null;
+    }
+
+    dynamic defaultValue;
+    if (defaultStr != null) {
+      defaultValue = dataType.parseFn(defaultStr);
+      if (defaultValue == null) {
+        print("defaultValue == null");
+        return null;
+      }
+    }
+
+    return ColumnSchema(
+      columnName: columnName,
+      dataType: dataType,
+      defaultValue: defaultValue,
+    );
   }
+
+  @override
+  String toString() => defaultValue == null
+      ? "$columnName: $dataType"
+      : defaultValue is String
+      ? "$columnName: $dataType = \"$defaultValue\""
+      : "$columnName: $dataType = $defaultValue";
 }
