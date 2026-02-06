@@ -7,7 +7,7 @@ In this repository, BetterSheets data types are implemented as wrappers around D
 
 ## Built-in types
 
-Currently, TodoBetter provides the following concrete subclasses of `DataType<T>` (note that `NumericDataType<T extends num>` is an abstract child class of `DataType<T>`):
+Currently, TodoBetter provides the following concrete subclasses of `DataType<T>` (note that `NumericDataType<T extends num>` is an abstract subclass of `DataType<T>`):
 - `IntegerDataType extends NumericDataType<int>`
 - `DoubleDataType extends NumericDataType<double>`
 - `StringDataType extends DataType<String>`
@@ -15,7 +15,7 @@ Currently, TodoBetter provides the following concrete subclasses of `DataType<T>
 ## Nullability and existence checking
 
 Any data type can be made nullable in BetterSheets. Nullability and existence checking are
-handled in the base `DataType<T>` class (although this behaviour is overridden by in the `StringDataType` class). Some important notes about nullability in BetterSheets:
+handled in the base `DataType<T>` class (although this behaviour is overridden by in the `StringDataType` class).
 
 ## Type checking
 
@@ -27,7 +27,7 @@ Concrete subclasses of `NumericDataType<T extends num>` can store a min and max 
 
 ## Textual representation
 
-BetterSheets will have a system for encoding and decoding data type information into textual format. The following examples demonstrate the syntax of the BetterSheets data type textual representations. Note that there are no whitespaces anywhere in the textual representations of TodoBetter types (as a requirement).
+BetterSheets has a system for encoding and decoding data type information into textual format. The following examples demonstrate the syntax of the BetterSheets data type textual representations.
 
 Non-nullable integer data type with no range restrictions:
 ```
@@ -53,6 +53,13 @@ Non-nullable integer data type with range [0, 10] (inclusive both sides):
 ```
 int<0,10>
 ```
+or  
+```
+int<0, 10>
+```
+
+Note the space is optional, and BetterSheets won't include the space when 
+outputting 
 
 Nullable integer data type with range [0, 10] (inclusive both sides):
 ```
@@ -61,12 +68,12 @@ int?<0,10>
 
 Nullable double data type with range [0.0, 10.0] (inclusive both sides):
 ```
-double?<0.0, 10.0>
+double?<0.0,10.0>
 ```
 
 Nullable string data type with length in range [5, 10]:
 ```
-str?<5, 10>
+str?<5,10>
 ```
 
 ## Important note for nullable string types

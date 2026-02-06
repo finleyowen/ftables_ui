@@ -9,6 +9,10 @@ void expectMapToDataType(String s) {
   expect(DataType.fromString(s).toString(), equals(s));
 }
 
+void expectParseToDataType(String s) {
+  expect(DataType.fromString(s), isNotNull);
+}
+
 void main() {
   test("DataType to/from String test", () {
     expectMapToDataType("int<1,5>");
@@ -30,6 +34,9 @@ void main() {
     expectMapToDataType("str<,5>");
     expectMapToDataType("str?<1,5>");
     expectMapToDataType("str?<1,5>");
+
+    expectParseToDataType("int<1, 5>");
+    expectParseToDataType("str?<5, 5>");
   });
 
   test("Integer validation tests", () {
@@ -50,6 +57,26 @@ void main() {
     expect(dtype1.validate("1.0"), isNotNull); // type error
     expect(dtype1.validate("0"), isNotNull); // range error
     expect(dtype1.validate("6"), isNotNull); // range error again
+
+    final dtype3 = DataType.fromString("int")!;
+    expect(dtype3.validate("12"), isNull);
+    expect(dtype3.validate("12209090"), isNull);
+
+    expect(dtype3.validate("12209090.5"), isNotNull);
+    expect(dtype3.validate("abcde"), isNotNull);
+    expect(dtype3.validate("-120-24"), isNotNull);
+    expect(dtype3.validate(""), isNotNull);
+    expect(dtype3.validate(null), isNotNull);
+
+    final dtype4 = DataType.fromString("int?")!;
+    expect(dtype4.validate("12"), isNull);
+    expect(dtype4.validate("12209090"), isNull);
+    expect(dtype4.validate(""), isNull);
+    expect(dtype4.validate(null), isNull);
+
+    expect(dtype4.validate("12209090.5"), isNotNull);
+    expect(dtype4.validate("abcde"), isNotNull);
+    expect(dtype4.validate("-120-24"), isNotNull);
   });
 
   test("Double validation tests", () {
@@ -83,5 +110,36 @@ void main() {
     final dtype3 = DataType.fromString("double<,10>")!;
     expect(dtype3.validate("-100"), isNull);
     expect(dtype3.validate("10.01"), isNotNull); // range error
+  });
+
+  test("String validation tests", () {
+    final dtype1 = DataType.fromString("str?<3,5>")!;
+    expect(dtype1.validate("abc"), isNull);
+    expect(dtype1.validate("abcd"), isNull);
+    expect(dtype1.validate("abcde"), isNull);
+    expect(dtype1.validate(""), isNull);
+    expect(dtype1.validate(null), isNull);
+
+    expect(dtype1.validate("ab"), isNotNull);
+    expect(dtype1.validate("abcdef"), isNotNull);
+
+    final dtype2 = DataType.fromString("str<3,5>")!;
+    expect(dtype2.validate("abc"), isNull);
+    expect(dtype2.validate("abcd"), isNull);
+    expect(dtype2.validate("abcde"), isNull);
+
+    expect(dtype2.validate(""), isNotNull);
+    expect(dtype2.validate(null), isNotNull);
+    expect(dtype2.validate("ab"), isNotNull);
+    expect(dtype2.validate("abcdef"), isNotNull);
+
+    final dtype3 = DataType.fromString("str?<5, 5>")!;
+    expect(dtype3.validate("abcde"), isNull);
+    expect(dtype3.validate("00000"), isNull);
+    expect(dtype3.validate(""), isNull);
+    expect(dtype3.validate(null), isNull);
+
+    expect(dtype3.validate("abcd"), isNotNull);
+    expect(dtype3.validate("abcdef"), isNotNull);
   });
 }

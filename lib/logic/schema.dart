@@ -7,6 +7,15 @@ import 'package:bettersheets_ui/logic/data_type.dart';
 const columnSchemaRegExpSource =
     r"^([a-zA-Z][a-zA-Z0-9_]+): ([^ =\n]+)( = .+)?$";
 
+const String stringLiteralRegExpSource = r'^"([^"]+)"$';
+
+String? parseStringLiteral(String val) {
+  if (RegExp(stringLiteralRegExpSource).hasMatch(val)) {
+    return val.substring(1, val.length - 1);
+  }
+  return null;
+}
+
 /// A table schema stores information about a table, including the table name,
 /// column schemas, and constraint schemas.
 class TableSchema {
@@ -71,6 +80,7 @@ class ColumnSchema<T> {
   });
 
   static ColumnSchema? fromString(String input) {
+    // extract information from the column schema using a RegExp
     final columnSchemaRe = RegExp(columnSchemaRegExpSource);
     final columnSchemaMatch = columnSchemaRe.firstMatch(input);
 
@@ -91,11 +101,19 @@ class ColumnSchema<T> {
       return null;
     }
 
+    // parse the default value
     dynamic defaultValue;
     if (defaultStr != null) {
-      defaultValue = dataType.parseFn(defaultStr);
+      if (dataType is StringDataType) {
+        // string literals need to be handled differently when parsing a schema
+        // because they need to be inside quotes.
+        defaultValue = parseStringLiteral(defaultStr);
+      } else {
+        defaultValue = dataType.parseFn(defaultStr);
+      }
       if (defaultValue == null) {
-        print("defaultValue == null");
+        // defaultStr != null but defaultValue == null means a defaultValue was
+        // provided but it could not be parsed
         return null;
       }
     }

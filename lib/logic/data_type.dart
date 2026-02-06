@@ -6,10 +6,8 @@ const String doubleTypeName = "double";
 const String stringTypeName = "str";
 
 const String dtypeRegExpSource = r"^([a-zA-Z][a-zA-Z0-9_]+)(\?)?(<[^>\n]*>)?$";
-const String intArgsRegExpSource = r"^<(\-?[0-9]+)?,(\-?[0-9]+)?>$";
-const String doubleArgsRegExpSource = r"^<(\-?[0-9\.]+)?,(\-?[0-9\.]+)?>$";
-
-const String stringLiteralRegExpSource = r'^"([^"]+)"$';
+const String intArgsRegExpSource = r"^<(\-?[0-9]+)?, ?(\-?[0-9]+)?>$";
+const String doubleArgsRegExpSource = r"^<(\-?[0-9\.]+)?, ?(\-?[0-9\.]+)?>$";
 
 /// Enum representing the possible outcomes of an existence check.
 enum NullState { legallyNull, illegallyNull, notNull }
@@ -154,7 +152,6 @@ abstract class DataType<T> {
   /// Returns a `NullState` indicating the outcome of the existence check.
   NullState existsChcek(String? input) {
     if (input == null || input.isEmpty || input.toLowerCase() == "null") {
-      print("existsCheck found null");
       if (nullable) {
         // null and nullable
         return NullState.legallyNull;
@@ -225,18 +222,9 @@ class StringDataType extends DataType<String> {
   @override
   String get typeName => stringTypeName;
 
-  /// Function to extract a string from a string literal (i.e., check the
-  /// quotation marks are there and remove them)
-  static String? parseString(String val) {
-    if (RegExp(stringLiteralRegExpSource).hasMatch(val)) {
-      return val.substring(1, val.length - 1);
-    }
-    return null;
-  }
-
   /// Parse function that accepts
   @override
-  String? Function(String) get parseFn => parseString;
+  String? Function(String) get parseFn => ((val) => val);
 
   // handle null slightly differently from other data types
   @override
@@ -258,7 +246,7 @@ class StringDataType extends DataType<String> {
   @override
   String? rangeCheck(String val) {
     bool invalidLeft = (minLen != null && val.length < minLen!);
-    bool invalidRight = (maxLen != null && val.length < maxLen!);
+    bool invalidRight = (maxLen != null && val.length > maxLen!);
 
     if (invalidLeft || invalidRight) {
       return "Length ${val.length} of value '$val' not in range [${minLen ?? "-inf"}, ${maxLen ?? "inf"}]";
