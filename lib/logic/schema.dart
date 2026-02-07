@@ -38,6 +38,7 @@ class TableSchema {
     this.constraints,
   });
 
+  /// Parse a table schema from a string using the application DDL if possible.
   static TableSchema? fromString(String tableStr) {
     final tableSchemaRe = RegExp(tableSchemaReSource);
     final tableSchemaMatch = tableSchemaRe.firstMatch(tableStr);
@@ -97,8 +98,8 @@ abstract class ConstraintSchema {
     return columns.toList();
   }
 
-  /// Parse a constraint schema from a string using the BetterSheets schema
-  /// syntax.
+  /// Parse a constraint schema from a string using the application DDL if
+  /// possible.
   static ConstraintSchema? fromString(String s) {
     if (s.startsWith("@")) {
       // unique
@@ -210,8 +211,7 @@ class ColumnSchema<T> {
     this.defaultValue,
   });
 
-  /// Parse a column schema from a string using the BetterSheets schema
-  /// syntax.
+  /// Parse a column schema from a string using the application DDL if possible.
   static ColumnSchema? fromString(String s) {
     // extract information from the column schema using a RegExp
     final columnSchemaRe = RegExp(columnSchemaRegExpSource);

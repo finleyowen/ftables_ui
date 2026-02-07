@@ -39,6 +39,7 @@ abstract class DataType<T> {
   /// Getter to get the name of this data type as a String.
   String get typeName;
 
+  /// Parse a data type from a string using the application DDL if possible.
   static DataType? fromString(String s) {
     final typeRe = RegExp(dtypeRegExpSource);
     final typeMatch = typeRe.firstMatch(s);
