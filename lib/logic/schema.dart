@@ -1,17 +1,26 @@
 /// Schema logic library
 library;
 
-import 'dart:collection';
 import 'package:bettersheets_ui/logic/data_type.dart';
 
-const columnSchemaRegExpSource =
-    r"^([a-zA-Z][a-zA-Z0-9_]+): ([^ =\n]+)( = .+)?$";
+const identReSource = r"[a-zA-Z][a-zA-Z0-9_]*";
+const identListReSource = r"[a-zA-Z0-9; ]+";
 
-const String stringLiteralRegExpSource = r'^"([^"]+)"$';
+const tableSchemaReSource = "($identListReSource)\\((.+)\\)";
 
-String? parseStringLiteral(String val) {
-  if (RegExp(stringLiteralRegExpSource).hasMatch(val)) {
-    return val.substring(1, val.length - 1);
+const columnSchemaRegExpSource = "^($identReSource): ?([^=\\n]+)( ?= ?(.+))?\$";
+
+const uniqueConstraintSchemaRegExpSource = "^@\\(($identListReSource)\\)\$";
+const pkConstraintSchemaRegExpSource = "^!@\\(($identListReSource)\\)\$";
+
+const fkConstraintSchemaRegExpSource =
+    "#\\(($identListReSource)\\) ?&($identReSource)\\(($identListReSource)\\)";
+
+const stringLiteralRegExpSource = r'^"([^"]+)"$';
+
+String? parseStringLiteral(String s) {
+  if (RegExp(stringLiteralRegExpSource).hasMatch(s)) {
+    return s.substring(1, s.length - 1);
   }
   return null;
 }
@@ -20,16 +29,55 @@ String? parseStringLiteral(String val) {
 /// column schemas, and constraint schemas.
 class TableSchema {
   final String tableName;
-  final HashMap<String, ColumnSchema> _columns;
+  final List<ColumnSchema> columns;
   final List<ConstraintSchema>? constraints;
-
-  Iterable<MapEntry<String, ColumnSchema>> get columns => _columns.entries;
 
   const TableSchema({
     required this.tableName,
-    required HashMap<String, ColumnSchema<dynamic>> columns,
+    required this.columns,
     this.constraints,
-  }) : _columns = columns;
+  });
+
+  static TableSchema? fromString(String tableStr) {
+    final tableSchemaRe = RegExp(tableSchemaReSource);
+    final tableSchemaMatch = tableSchemaRe.firstMatch(tableStr);
+
+    final tableName = tableSchemaMatch?.group(1);
+    final columnsConstraintsStr = tableSchemaMatch?.group(2);
+
+    if (tableName == null || columnsConstraintsStr == null) {
+      return null;
+    }
+
+    List<ColumnSchema> columns = [];
+    List<ConstraintSchema> constraints = [];
+
+    for (final columnConstraintStr in columnsConstraintsStr.split(",")) {
+      final column = ColumnSchema.fromString(columnConstraintStr);
+      if (column != null) {
+        columns.add(column);
+        continue;
+      }
+      final constraint = ConstraintSchema.fromString(columnConstraintStr);
+      if (constraint != null) {
+        constraints.add(constraint);
+        continue;
+      }
+      if (column == null && constraint == null) {
+        return null;
+      }
+    }
+
+    return TableSchema(
+      tableName: tableName,
+      columns: columns,
+      constraints: constraints.isEmpty ? null : constraints,
+    );
+  }
+
+  @override
+  String toString() =>
+      "$tableName(${columns.join(",")}${constraints != null ? ",${constraints!.join(",")}" : ""})";
 }
 
 /// Abstract parent class of [UniqueConstraintSchema] and [FKConstraintSchema].
@@ -37,6 +85,79 @@ abstract class ConstraintSchema {
   final List<String> columns;
 
   const ConstraintSchema({required this.columns});
+
+  static List<String>? _getColumnNames(String s) {
+    final columns = s.split(";").map((columnName) => columnName.trim());
+    final columnNameRe = RegExp(identReSource);
+    for (final columnName in columns) {
+      if (!columnNameRe.hasMatch(columnName)) {
+        return null;
+      }
+    }
+    return columns.toList();
+  }
+
+  /// Parse a constraint schema from a string using the BetterSheets schema
+  /// syntax.
+  static ConstraintSchema? fromString(String s) {
+    if (s.startsWith("@")) {
+      // unique
+      final uniqueConstraintSchemaRe = RegExp(
+        uniqueConstraintSchemaRegExpSource,
+      );
+      final columnsStr = uniqueConstraintSchemaRe.firstMatch(s)?.group(1);
+      if (columnsStr == null) {
+        return null;
+      }
+      final columns = _getColumnNames(columnsStr);
+      if (columns == null) {
+        return null;
+      }
+      return UniqueConstraintSchema(columns: columns);
+    } else if (s.startsWith("!@")) {
+      // pk
+      final pkConstraintSchemaRe = RegExp(pkConstraintSchemaRegExpSource);
+      final columnsStr = pkConstraintSchemaRe.firstMatch(s)?.group(1);
+      if (columnsStr == null) {
+        return null;
+      }
+      final columns = _getColumnNames(columnsStr);
+      if (columns == null) {
+        return null;
+      }
+      return PKConstraintSchema(columns: columns);
+    } else if (s.startsWith("#")) {
+      // fk
+      final fkConstraintSchema = RegExp(fkConstraintSchemaRegExpSource);
+      final fkConstraintSchemaMatch = fkConstraintSchema.firstMatch(s);
+
+      final columnsStr = fkConstraintSchemaMatch?.group(1);
+      if (columnsStr == null) {
+        return null;
+      }
+      final columns = _getColumnNames(columnsStr);
+      final referencesTable = fkConstraintSchemaMatch?.group(2);
+      final referencesColumns = fkConstraintSchemaMatch?.group(3)?.split(";");
+
+      if (columns == null ||
+          referencesTable == null ||
+          referencesColumns == null) {
+        return null;
+      }
+
+      return FKConstraintSchema(
+        columns: columns,
+        referencesTable: referencesTable,
+        referencesColumns: referencesColumns,
+      );
+    }
+    return null;
+  }
+
+  /// Convert a constraint schema to a string using the BetterSheets schema
+  /// syntax.
+  @override
+  String toString() => "(${columns.join(";")})";
 }
 
 /// A unique constraint schema stores information about a unique constraint,
@@ -44,25 +165,35 @@ abstract class ConstraintSchema {
 /// [PKConstraintSchema].
 class UniqueConstraintSchema extends ConstraintSchema {
   const UniqueConstraintSchema({required super.columns});
+
+  @override
+  String toString() => "@${super.toString()}";
 }
 
 /// A foreign key constraint schema stores information about a foreign key,
 /// including the columns it applies to and the table and columns it references.
 class FKConstraintSchema extends ConstraintSchema {
-  final TableSchema referencesTable;
-  final List<ColumnSchema> referencesColumns;
+  final String referencesTable;
+  final List<String> referencesColumns;
 
   const FKConstraintSchema({
     required super.columns,
     required this.referencesTable,
     required this.referencesColumns,
   });
+
+  @override
+  String toString() =>
+      "#${super.toString()}&$referencesTable(${referencesColumns.join(";")})";
 }
 
 /// A primary key constraint schema stores information about a primary key,
 /// including the columns it applies to.
 class PKConstraintSchema extends UniqueConstraintSchema {
   const PKConstraintSchema({required super.columns});
+
+  @override
+  String toString() => "!${super.toString()}";
 }
 
 /// A column schema stores information about a column, including its name, the
@@ -79,10 +210,12 @@ class ColumnSchema<T> {
     this.defaultValue,
   });
 
-  static ColumnSchema? fromString(String input) {
+  /// Parse a column schema from a string using the BetterSheets schema
+  /// syntax.
+  static ColumnSchema? fromString(String s) {
     // extract information from the column schema using a RegExp
     final columnSchemaRe = RegExp(columnSchemaRegExpSource);
-    final columnSchemaMatch = columnSchemaRe.firstMatch(input);
+    final columnSchemaMatch = columnSchemaRe.firstMatch(s);
 
     if (columnSchemaMatch == null) {
       return null;
@@ -90,7 +223,15 @@ class ColumnSchema<T> {
 
     final columnName = columnSchemaMatch.group(1);
     final dtypeStr = columnSchemaMatch.group(2);
-    final defaultStr = columnSchemaMatch.group(3)?.substring(3);
+    late final String? defaultStr;
+
+    // if the schema string has a ' ?= ?(.+)' group
+    if (columnSchemaMatch.group(3) != null) {
+      // get the expression after the ' ?= ?'
+      defaultStr = columnSchemaMatch.group(4);
+    } else {
+      defaultStr = null;
+    }
 
     if (columnName == null || dtypeStr == null) {
       return null;
@@ -125,10 +266,12 @@ class ColumnSchema<T> {
     );
   }
 
+  /// Convert a column schema to a string using the BetterSheets schema
+  /// syntax.
   @override
   String toString() => defaultValue == null
-      ? "$columnName: $dataType"
+      ? "$columnName:$dataType"
       : defaultValue is String
-      ? "$columnName: $dataType = \"$defaultValue\""
-      : "$columnName: $dataType = $defaultValue";
+      ? "$columnName:$dataType=\"$defaultValue\""
+      : "$columnName:$dataType=$defaultValue";
 }

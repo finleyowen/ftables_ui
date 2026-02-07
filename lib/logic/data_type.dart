@@ -6,8 +6,8 @@ const String doubleTypeName = "double";
 const String stringTypeName = "str";
 
 const String dtypeRegExpSource = r"^([a-zA-Z][a-zA-Z0-9_]+)(\?)?(<[^>\n]*>)?$";
-const String intArgsRegExpSource = r"^<(\-?[0-9]+)?, ?(\-?[0-9]+)?>$";
-const String doubleArgsRegExpSource = r"^<(\-?[0-9\.]+)?, ?(\-?[0-9\.]+)?>$";
+const String intArgsRegExpSource = r"^<(\-?[0-9]+)?; ?(\-?[0-9]+)?>$";
+const String doubleArgsRegExpSource = r"^<(\-?[0-9\.]+)?; ?(\-?[0-9\.]+)?>$";
 
 /// Enum representing the possible outcomes of an existence check.
 enum NullState { legallyNull, illegallyNull, notNull }
@@ -39,23 +39,19 @@ abstract class DataType<T> {
   /// Getter to get the name of this data type as a String.
   String get typeName;
 
-  static DataType? fromString(String input) {
+  static DataType? fromString(String s) {
     final typeRe = RegExp(dtypeRegExpSource);
-    final typeMatch = typeRe.firstMatch(input);
+    final typeMatch = typeRe.firstMatch(s);
 
-    if (typeMatch == null) {
-      return null;
-    }
-
-    var typeName = typeMatch.group(1);
+    var typeName = typeMatch?.group(1);
     if (typeName == null) {
       return null;
     }
 
-    final questionMark = typeMatch.group(2);
+    final questionMark = typeMatch?.group(2);
     final nullable = questionMark == "?";
 
-    final typeInfo = typeMatch.group(3);
+    final typeInfo = typeMatch?.group(3);
 
     switch (typeName) {
       // parse integer type
@@ -258,7 +254,7 @@ class StringDataType extends DataType<String> {
   @override
   String toString() => (minLen == null && maxLen == null)
       ? super.toString()
-      : "${super.toString()}<${minLen ?? ""},${maxLen ?? ""}>";
+      : "${super.toString()}<${minLen ?? ""};${maxLen ?? ""}>";
 }
 
 /// Implements functionality shared between concrete numeric data types
@@ -291,7 +287,7 @@ abstract class NumericDataType<T extends num> extends DataType<T> {
   @override
   String toString() => (min == null && max == null)
       ? super.toString()
-      : "${super.toString()}<${min ?? ""},${max ?? ""}>";
+      : "${super.toString()}<${min ?? ""};${max ?? ""}>";
 }
 
 /// The BetterSheets integer data type is a wrapper around Dart's [int] type.

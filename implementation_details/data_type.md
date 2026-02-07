@@ -1,6 +1,7 @@
 # BetterSheets Data Types
 
 See [source code](../lib/logic/data_type.dart)  
+See [tests](../tests/data_type.dart)  
 
 In this repository, BetterSheets data types are implemented as wrappers around Dart data types. They inherit from the abstract `DataType<T>` class, where `T` is the Dart type that the BetterSheets type wraps around. The `DataType<T>` class and its subclasses are responsible for validating input.
 
@@ -14,7 +15,7 @@ Currently, TodoBetter provides the following concrete subclasses of `DataType<T>
 
 ## Nullability and existence checking
 
-Any data type can be made nullable in BetterSheets. Nullability and existence checking are
+Any data type can be made nullable in the application. Nullability and existence checking are
 handled in the base `DataType<T>` class (although this behaviour is overridden by in the `StringDataType` class).
 
 ## Type checking
@@ -27,58 +28,11 @@ Concrete subclasses of `NumericDataType<T extends num>` can store a min and max 
 
 ## Textual representation
 
-BetterSheets has a system for encoding and decoding data type information into textual format. The following examples demonstrate the syntax of the BetterSheets data type textual representations.
-
-Non-nullable integer data type with no range restrictions:
-```
-int
-```
-
-Nullable integer data type with no range restrictions:
-```
-int?
-```
-
-Non-nullable integer data type with minimum 0 (inclusive):
-```
-int<0,>
-```
-
-Non-nullable integer data type with no minimum, maximum 10 (inclusive):
-```
-int<,10>
-```
-
-Non-nullable integer data type with range [0, 10] (inclusive both sides):
-```
-int<0,10>
-```
-or  
-```
-int<0, 10>
-```
-
-Note the space is optional, and BetterSheets won't include the space when 
-outputting 
-
-Nullable integer data type with range [0, 10] (inclusive both sides):
-```
-int?<0,10>
-```
-
-Nullable double data type with range [0.0, 10.0] (inclusive both sides):
-```
-double?<0.0,10.0>
-```
-
-Nullable string data type with length in range [5, 10]:
-```
-str?<5,10>
-```
+The application has a system for encoding and decoding information about schemas from text, including parsing data types from text and converting them into text using the application's schema textual representation.
 
 ## Important note for nullable string types
 
-BetterSheets **does not** differentiate between null and "" (empty string). 
+The application **does not** differentiate between null and "" (empty string). 
 
 So, the data type represented by `str?<5, 10>` will accept an empty string, or a string with length in range [5, 10]. It won't accept a string with length in range [1, 4] or length > 11.
 
@@ -86,4 +40,4 @@ If a string type is non-nullable, and no minimum length is set (or the minimum l
 
 So, the data types `str?<, 10>`, `str<, 10>`, `str?<1, 10>` are all equivalent (but not to `str<1, 10>` or `str?<2, 10>`)
 
-BetterSheets **does** differentiate between null and 0 for numeric data types.
+The application **does** differentiate between null and 0 for numeric data types.
