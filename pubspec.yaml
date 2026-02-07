@@ -1,5 +1,5 @@
-name: bettersheets_ui
-description: "A new Flutter project."
+name: fsheets
+description: "The spreadsheet application that is better."
 publish_to: 'none'
 version: 0.1.0
 

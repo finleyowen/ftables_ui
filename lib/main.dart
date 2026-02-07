@@ -1,3 +1,6 @@
+/// Main library
+library;
+
 import 'package:flutter/material.dart';
 
 void main() {

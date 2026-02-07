@@ -1,4 +1,4 @@
-import 'package:bettersheets_ui/logic/schema.dart';
+import 'package:fsheets/logic/schema.dart';
 import 'package:test/test.dart';
 
 void expectMapToColumnSchema(String s) {

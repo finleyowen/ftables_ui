@@ -1,7 +1,7 @@
 /// Schema logic library
 library;
 
-import 'package:bettersheets_ui/logic/data_type.dart';
+import 'package:fsheets/logic/data_type.dart';
 
 const identReSource = r"[a-zA-Z][a-zA-Z0-9_]*";
 const identListReSource = r"[a-zA-Z0-9; ]+";

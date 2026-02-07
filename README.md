@@ -1,6 +1,6 @@
-# BetterSheets UI
+# FSheets UI
 
-User interface for BetterSheets, the spreadsheet application that is better.
+User interface for FSheets, the spreadsheet application that is better.
 
 ## Motivation
 

@@ -1,9 +1,9 @@
-# BetterSheets Data Types
+# FSheets Data Types
 
 See [source code](../lib/logic/data_type.dart)  
 See [tests](../tests/data_type.dart)  
 
-In this repository, BetterSheets data types are implemented as wrappers around Dart data types. They inherit from the abstract `DataType<T>` class, where `T` is the Dart type that the BetterSheets type wraps around. The `DataType<T>` class and its subclasses are responsible for validating input.
+In this repository, FSheets data types are implemented as wrappers around Dart data types. They inherit from the abstract `DataType<T>` class, where `T` is the Dart type that the FSheets type wraps around. The `DataType<T>` class and its subclasses are responsible for validating input.
 
 
 ## Built-in types

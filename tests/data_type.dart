@@ -1,7 +1,7 @@
 /// Data types logic tests
 library;
 
-import 'package:bettersheets_ui/logic/data_type.dart';
+import 'package:fsheets/logic/data_type.dart';
 import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
 

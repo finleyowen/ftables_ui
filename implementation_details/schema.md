@@ -1,9 +1,9 @@
-# BetterSheets Schemas
+# FSheets Schemas
 
 See [source code](../lib/logic/schema.dart)  
 See [tests](../tests/schema.dart)  
 
-Schemas or shcemata in BetterSheets define the structure of tables and columns in spreadsheets. They store information like the names of tables and columns, data types of columns, and constraints on tables.
+Schemas or shcemata in FSheets define the structure of tables and columns in spreadsheets. They store information like the names of tables and columns, data types of columns, and constraints on tables.
 
 ## Column Schemas
 
@@ -11,7 +11,7 @@ A column schema stores information about a column including its name, data type,
 
 ## Constraint Schemas
 
-A constraint schema stores infomration about a constraint in a table schema. BetterSheets supports three types of constraints:
+A constraint schema stores infomration about a constraint in a table schema. FSheets supports three types of constraints:
 
 - Unique constraints specify a subset of columns that form a unique key in the table
 - Primary key constraints extend unique constraints specify a subset of columns that form a primary key in the table
