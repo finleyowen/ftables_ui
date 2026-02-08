@@ -155,7 +155,7 @@ abstract class ConstraintSchema {
     return null;
   }
 
-  /// Convert a constraint schema to a string using the BetterSheets schema
+  /// Convert a constraint schema to a string using the FSheets schema
   /// syntax.
   @override
   String toString() => "(${columns.join(";")})";
@@ -266,7 +266,7 @@ class ColumnSchema<T> {
     );
   }
 
-  /// Convert a column schema to a string using the BetterSheets schema
+  /// Convert a column schema to a string using the FSheets schema
   /// syntax.
   @override
   String toString() => defaultValue == null

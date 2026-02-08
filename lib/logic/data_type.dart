@@ -12,9 +12,9 @@ const String doubleArgsRegExpSource = r"^<(\-?[0-9\.]+)?; ?(\-?[0-9\.]+)?>$";
 /// Enum representing the possible outcomes of an existence check.
 enum NullState { legallyNull, illegallyNull, notNull }
 
-/// A BetterSheets data type is implemented as a wrapper around a Dart type [T].
+/// A FSheets data type is implemented as a wrapper around a Dart type [T].
 ///
-/// The abstract [DataType] class defines information about a BetterSheets
+/// The abstract [DataType] class defines information about a FSheets
 /// data type.
 abstract class DataType<T> {
   /// Boolean indicating whether the data type is required (`nullable == false`)
@@ -207,7 +207,7 @@ abstract class DataType<T> {
   int get hashCode => Object.hash(nullable, parseFn, typeName);
 }
 
-/// The BetterSheets string data type is a wrapper around Dart's [String] type.
+/// The FSheets string data type is a wrapper around Dart's [String] type.
 class StringDataType extends DataType<String> {
   // Minimum length of strings accepted by the data type.
   final int? minLen;
@@ -227,7 +227,7 @@ class StringDataType extends DataType<String> {
   @override
   NullState existsChcek(String? input) {
     if (input == null || input.isEmpty || input.toLowerCase() == "null") {
-      // NOTE: BetterSheets does not differentiate between null and "" (empty
+      // NOTE: FSheets does not differentiate between null and "" (empty
       // string).
       if (nullable || minLen == 0) {
         // null and nullable
@@ -259,10 +259,10 @@ class StringDataType extends DataType<String> {
 }
 
 /// Implements functionality shared between concrete numeric data types
-/// available in BetterSheets.
+/// available in FSheets.
 ///
 /// The abstract [NumericDataType] class has a type parameter [T] that extends
-/// the [num] class. It is the Dart data type that this BetterSheets data type
+/// the [num] class. It is the Dart data type that this FSheets data type
 /// wraps around.
 abstract class NumericDataType<T extends num> extends DataType<T> {
   /// The minimum value accepted by the data type.
@@ -291,7 +291,7 @@ abstract class NumericDataType<T extends num> extends DataType<T> {
       : "${super.toString()}<${min ?? ""};${max ?? ""}>";
 }
 
-/// The BetterSheets integer data type is a wrapper around Dart's [int] type.
+/// The FSheets integer data type is a wrapper around Dart's [int] type.
 class IntegerDataType extends NumericDataType<int> {
   const IntegerDataType({required super.nullable, super.min, super.max});
 
@@ -309,7 +309,7 @@ class IntegerDataType extends NumericDataType<int> {
   int get hashCode => Object.hash(super.hashCode, min, max);
 }
 
-/// The BetterSheets double data type is a wrapper around Dart's [double] type.
+/// The FSheets double data type is a wrapper around Dart's [double] type.
 class DoubleDataType extends NumericDataType<double> {
   const DoubleDataType({required super.nullable, super.min, super.max});
 
