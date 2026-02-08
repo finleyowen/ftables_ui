@@ -1,5 +1,7 @@
 # FSheets DDL
 
+See [source code](../lib/logic/data_type.dart)  
+
 FSheets has its own Data Definition Language or DDL for representing schemas with text. The application can parse schemas from the textual representation and convert schemas to the textual representation.
 
 ## Data types

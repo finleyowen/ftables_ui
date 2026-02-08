@@ -1,13 +1,12 @@
 /// Data type logic library
 library;
 
-const String intTypeName = "int";
-const String doubleTypeName = "double";
-const String stringTypeName = "str";
+const intTypeName = "int";
+const doubleTypeName = "double";
+const stringTypeName = "str";
 
-const String dtypeRegExpSource = r"^([a-zA-Z][a-zA-Z0-9_]+)(\?)?(<[^>\n]*>)?$";
-const String intArgsRegExpSource = r"^<(\-?[0-9]+)?; ?(\-?[0-9]+)?>$";
-const String doubleArgsRegExpSource = r"^<(\-?[0-9\.]+)?; ?(\-?[0-9\.]+)?>$";
+const intPat = r"\-?[0-9]+";
+const doublePat = r"\-?[0-9\.]+";
 
 /// Enum representing the possible outcomes of an existence check.
 enum NullState { legallyNull, illegallyNull, notNull }
@@ -38,111 +37,6 @@ abstract class DataType<T> {
 
   /// Getter to get the name of this data type as a String.
   String get typeName;
-
-  /// Parse a data type from a string using the application DDL if possible.
-  static DataType? fromString(String s) {
-    final typeRe = RegExp(dtypeRegExpSource);
-    final typeMatch = typeRe.firstMatch(s);
-
-    var typeName = typeMatch?.group(1);
-    if (typeName == null) {
-      return null;
-    }
-
-    final questionMark = typeMatch?.group(2);
-    final nullable = questionMark == "?";
-
-    final typeInfo = typeMatch?.group(3);
-
-    switch (typeName) {
-      // parse integer type
-      case intTypeName:
-        if (typeInfo != null) {
-          final intArgsRe = RegExp(intArgsRegExpSource);
-          final intArgsMatch = intArgsRe.firstMatch(typeInfo);
-
-          if (intArgsMatch == null) {
-            return null;
-          }
-
-          final minStr = intArgsMatch.group(1);
-          final maxStr = intArgsMatch.group(2);
-
-          late final int? min, max;
-
-          try {
-            min = minStr == null || minStr == "" ? null : int.parse(minStr);
-            max = maxStr == null || minStr == "" ? null : int.parse(maxStr);
-          } catch (err) {
-            return null;
-          }
-
-          return IntegerDataType(nullable: nullable, min: min, max: max);
-        }
-        return IntegerDataType(nullable: nullable);
-      // parse double type
-      case doubleTypeName:
-        if (typeInfo != null) {
-          final doubleArgsRe = RegExp(doubleArgsRegExpSource);
-          final doubleArgsMatch = doubleArgsRe.firstMatch(typeInfo);
-
-          if (doubleArgsMatch == null) {
-            return null;
-          }
-
-          final minStr = doubleArgsMatch.group(1);
-          final maxStr = doubleArgsMatch.group(2);
-
-          late final double? min, max;
-
-          try {
-            min = minStr == null || minStr == "" ? null : double.parse(minStr);
-            max = maxStr == null || minStr == "" ? null : double.parse(maxStr);
-          } catch (err) {
-            return null;
-          }
-
-          return DoubleDataType(nullable: nullable, min: min, max: max);
-        }
-        return DoubleDataType(nullable: nullable);
-      // parse string type
-      case stringTypeName:
-        if (typeInfo != null) {
-          final strArgsRe = RegExp(intArgsRegExpSource);
-          final strArgsMatch = strArgsRe.firstMatch(typeInfo);
-
-          if (strArgsMatch == null) {
-            return null;
-          }
-
-          final minLenStr = strArgsMatch.group(1);
-          final maxLenStr = strArgsMatch.group(2);
-
-          late final int? minLen, maxLen;
-
-          try {
-            minLen = minLenStr == null || minLenStr == ""
-                ? null
-                : int.parse(minLenStr);
-            maxLen = maxLenStr == null || minLenStr == ""
-                ? null
-                : int.parse(maxLenStr);
-          } catch (err) {
-            return null;
-          }
-
-          return StringDataType(
-            nullable: nullable,
-            minLen: minLen,
-            maxLen: maxLen,
-          );
-        }
-        return StringDataType(nullable: nullable);
-      // unrecognised type
-      default:
-        return null;
-    }
-  }
 
   /// Method to perform the existence checking stage of input validation.
   ///

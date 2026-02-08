@@ -1,20 +1,24 @@
-import 'package:fsheets/logic/schema.dart';
+import 'package:fsheets/logic/ddl.dart';
 import 'package:test/test.dart';
 
 void expectMapToColumnSchema(String s) {
-  expect(ColumnSchema.fromString(s).toString(), equals(s));
+  expect(parseColumnSchema(s).toString(), equals(s));
 }
 
 void expectParseToColumnSchema(String s) {
-  expect(ColumnSchema.fromString(s).toString(), isNotNull);
+  expect(parseColumnSchema(s).toString(), isNotNull);
 }
 
 void expectMapToConstraintSchema(String s) {
-  expect(ConstraintSchema.fromString(s).toString(), equals(s));
+  expect(parseConstraintSchema(s).toString(), equals(s));
 }
 
 void expectMapToTableSchema(String s) {
-  expect(TableSchema.fromString(s).toString(), equals(s));
+  expect(parseTableSchema(s).toString(), equals(s));
+}
+
+void expectParseToTableSchema(String s) {
+  expect(parseTableSchema(s), isNotNull);
 }
 
 void main() {
@@ -32,24 +36,22 @@ void main() {
 
   test("Constraint schema string IO test", () {
     // unique
-    expect(ConstraintSchema.fromString("@(column1; column2)"), isNotNull);
+    expect(parseConstraintSchema("@(column1; column2)"), isNotNull);
 
     // pk
-    expect(ConstraintSchema.fromString("!@(column1; column2)"), isNotNull);
+    expect(parseConstraintSchema("!@(column1; column2)"), isNotNull);
 
     // fk
     expect(
-      ConstraintSchema.fromString(
-        "#(column1; column2) &table1(column1; column2)",
-      ),
+      parseConstraintSchema("#(column1; column2) &table1(column1; column2)"),
       isNotNull,
     );
 
     // invalid
-    expect(ConstraintSchema.fromString("@(column1, column2)"), isNull);
-    expect(ConstraintSchema.fromString("@(column1; column2; )"), isNull);
-    expect(ConstraintSchema.fromString("@()"), isNull);
-    expect(ConstraintSchema.fromString("@(;)"), isNull);
+    expect(parseConstraintSchema("@(column1, column2)"), isNull);
+    expect(parseConstraintSchema("@(column1; column2; )"), isNull);
+    expect(parseConstraintSchema("@()"), isNull);
+    expect(parseConstraintSchema("@(;)"), isNull);
 
     // like column schemas, constraint schemas will map to strings with the
     // optional whitespace omitted
@@ -67,5 +69,19 @@ void main() {
     expectMapToTableSchema(
       "employee(id:int,department:str,!@(id),#(id)&person(id))",
     );
+
+    expectParseToTableSchema("""person(
+      id: int, 
+      firstName: str, 
+      surname: str,
+      @(id)
+    )""");
+
+    expectParseToTableSchema("""animal(
+      id: int,
+      name: str?,
+      owner_id: int?,
+      #(owner_id)&person(id)
+    )""");
   });
 }

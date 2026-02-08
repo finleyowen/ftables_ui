@@ -1,20 +1,20 @@
 /// Data types logic tests
 library;
 
-import 'package:fsheets/logic/data_type.dart';
+import 'package:fsheets/logic/ddl.dart';
 import 'package:test/expect.dart';
 import 'package:test/scaffolding.dart';
 
 void expectMapToDataType(String s) {
-  expect(DataType.fromString(s).toString(), equals(s));
+  expect(parseDataType(s).toString(), equals(s));
 }
 
 void expectParseToDataType(String s) {
-  expect(DataType.fromString(s), isNotNull);
+  expect(parseDataType(s), isNotNull);
 }
 
 void expectNotParseToDataType(String s) {
-  expect(DataType.fromString(s), isNull);
+  expect(parseDataType(s), isNull);
 }
 
 void main() {
@@ -47,7 +47,7 @@ void main() {
   });
 
   test("Integer validation tests", () {
-    final dtype1 = DataType.fromString("int?<1;5>")!; // optional int in [1, 5]
+    final dtype1 = parseDataType("int?<1;5>")!; // optional int in [1, 5]
     expect(dtype1.validate("1"), isNull);
     expect(dtype1.validate("5"), isNull);
     expect(dtype1.validate(""), isNull);
@@ -56,7 +56,7 @@ void main() {
     expect(dtype1.validate("0"), isNotNull); // range error
     expect(dtype1.validate("6"), isNotNull); // range error again
 
-    final dtype2 = DataType.fromString("int<1;5>")!; // mandatory int in [1, 5]
+    final dtype2 = parseDataType("int<1;5>")!; // mandatory int in [1, 5]
     expect(dtype2.validate("1"), isNull);
     expect(dtype2.validate("5"), isNull);
     expect(dtype2.validate(""), isNotNull); // fails existence check
@@ -65,7 +65,7 @@ void main() {
     expect(dtype1.validate("0"), isNotNull); // range error
     expect(dtype1.validate("6"), isNotNull); // range error again
 
-    final dtype3 = DataType.fromString("int")!;
+    final dtype3 = parseDataType("int")!;
     expect(dtype3.validate("12"), isNull);
     expect(dtype3.validate("12209090"), isNull);
 
@@ -75,7 +75,7 @@ void main() {
     expect(dtype3.validate(""), isNotNull);
     expect(dtype3.validate(null), isNotNull);
 
-    final dtype4 = DataType.fromString("int?")!;
+    final dtype4 = parseDataType("int?")!;
     expect(dtype4.validate("12"), isNull);
     expect(dtype4.validate("12209090"), isNull);
     expect(dtype4.validate(""), isNull);
@@ -87,7 +87,7 @@ void main() {
   });
 
   test("Double validation tests", () {
-    final dtype1 = DataType.fromString(
+    final dtype1 = parseDataType(
       "double?<1.0; 5.0>",
     )!; // optional double in [1.0, 5.0]
     expect(dtype1.validate("1.0"), isNull);
@@ -101,7 +101,7 @@ void main() {
       isNotNull,
     ); // range error again
 
-    final dtype2 = DataType.fromString(
+    final dtype2 = parseDataType(
       "double<1.0;5.0>",
     )!; // mandatory double in [1, 5]
     expect(dtype2.validate("1"), isNull);
@@ -114,13 +114,13 @@ void main() {
     expect(dtype1.validate("0.99999"), isNotNull); // range error
     expect(dtype1.validate("5.00001"), isNotNull); // range error again
 
-    final dtype3 = DataType.fromString("double<;10>")!;
+    final dtype3 = parseDataType("double<;10>")!;
     expect(dtype3.validate("-100"), isNull);
     expect(dtype3.validate("10.01"), isNotNull); // range error
   });
 
   test("String validation tests", () {
-    final dtype1 = DataType.fromString("str?<3;5>")!;
+    final dtype1 = parseDataType("str?<3;5>")!;
     expect(dtype1.validate("abc"), isNull);
     expect(dtype1.validate("abcd"), isNull);
     expect(dtype1.validate("abcde"), isNull);
@@ -130,7 +130,7 @@ void main() {
     expect(dtype1.validate("ab"), isNotNull);
     expect(dtype1.validate("abcdef"), isNotNull);
 
-    final dtype2 = DataType.fromString("str<3;5>")!;
+    final dtype2 = parseDataType("str<3;5>")!;
     expect(dtype2.validate("abc"), isNull);
     expect(dtype2.validate("abcd"), isNull);
     expect(dtype2.validate("abcde"), isNull);
@@ -140,7 +140,7 @@ void main() {
     expect(dtype2.validate("ab"), isNotNull);
     expect(dtype2.validate("abcdef"), isNotNull);
 
-    final dtype3 = DataType.fromString("str?<5; 5>")!;
+    final dtype3 = parseDataType("str?<5; 5>")!;
     expect(dtype3.validate("abcde"), isNull);
     expect(dtype3.validate("00000"), isNull);
     expect(dtype3.validate(""), isNull);
