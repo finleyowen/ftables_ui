@@ -16,7 +16,7 @@ const intArgsPat = "^<($intPat)?;$optWhiteSpacePat($intPat)?>\$";
 
 const doubleArgsPat = "^<($doublePat)?;$optWhiteSpacePat($doublePat)?>\$";
 
-const tableSchemaPat = "($identListPat)$optWhiteSpacePat\\((.+)\\)";
+const tableSchemaPat = "^($identListPat)$optWhiteSpacePat\\((.+)\\)\$";
 
 const columnSchemaPat =
     "^($identPat):$optWhiteSpacePat([^=]+)($optWhiteSpacePat=$optWhiteSpacePat(.+))?\$";
@@ -52,7 +52,7 @@ String? _parseStringLiteral(String s) {
 DataType? parseDataType(String s) {
   {
     final typeRe = RegExp(dtypePat);
-    final typeMatch = typeRe.firstMatch(s);
+    final typeMatch = typeRe.firstMatch(s.trim());
 
     var typeName = typeMatch?.group(1);
     if (typeName == null) {

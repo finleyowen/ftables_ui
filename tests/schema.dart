@@ -83,5 +83,9 @@ void main() {
       owner_id: int?,
       #(owner_id)&person(id)
     )""");
+
+    expectParseToTableSchema(
+      "T(a: int = 1, b: double = 1.0, c: str = \"abc\")",
+    );
   });
 }

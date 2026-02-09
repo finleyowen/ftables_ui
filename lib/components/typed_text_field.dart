@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fsheets/logic/data_type.dart';
+import 'package:fsheets/logic/schema.dart';
 
 class TypedTextField<T extends DataType> extends StatelessWidget {
   final T dataType;
@@ -15,6 +16,42 @@ class TypedTextField<T extends DataType> extends StatelessWidget {
     required this.labelText,
     this.controller,
   });
+
+  static TypedTextField? fromColumnSchema(ColumnSchema columnSchema) {
+    switch (columnSchema.dataType) {
+      case IntegerDataType _:
+        return IntegerTextField(
+          dataType: columnSchema.dataType as IntegerDataType,
+          labelText: columnSchema.columnName,
+          controller: TextEditingController(
+            text: columnSchema.defaultValue != null
+                ? columnSchema.defaultValue.toString()
+                : "",
+          ),
+        );
+      case DoubleDataType _:
+        return DoubleTextField(
+          dataType: columnSchema.dataType as DoubleDataType,
+          labelText: columnSchema.columnName,
+          controller: TextEditingController(
+            text: columnSchema.defaultValue != null
+                ? columnSchema.defaultValue.toString()
+                : "",
+          ),
+        );
+      case StringDataType _:
+        return StringTextField(
+          dataType: columnSchema.dataType as StringDataType,
+          labelText: columnSchema.columnName,
+          controller: TextEditingController(
+            text: columnSchema.defaultValue != null
+                ? columnSchema.defaultValue.toString()
+                : "",
+          ),
+        );
+    }
+    return TypedTextField(dataType: columnSchema.dataType, labelText: "");
+  }
 
   @override
   Widget build(BuildContext context) => TextFormField(

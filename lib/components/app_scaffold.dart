@@ -17,7 +17,7 @@ class AppScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    body: body,
+    body: Padding(padding: EdgeInsetsGeometry.all(10), child: body),
     floatingActionButton: floatingActionButton,
     floatingActionButtonLocation: floatingActionButtonLocation,
   );
