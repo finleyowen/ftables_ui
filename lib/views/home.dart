@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fsheets/components/app_scaffold.dart';
 import 'package:fsheets/components/typed_text_field.dart';
+import 'package:fsheets/components/util.dart';
 import 'package:fsheets/logic/data_type.dart';
 import 'package:fsheets/logic/ddl.dart';
 import 'package:fsheets/views/table_form.dart';
@@ -21,6 +22,15 @@ class _HomeViewState extends State<HomeView> {
     body: Column(
       spacing: 20,
       children: [
+        PaddedRow(
+          padding: EdgeInsetsGeometry.symmetric(vertical: 20, horizontal: 0),
+          children: [
+            Text(
+              "BetterSheets",
+              style: Theme.of(context).textTheme.headlineLarge,
+            ),
+          ],
+        ),
         StringTextField(
           controller: schemaController,
           dataType: StringDataType(nullable: false),

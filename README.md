@@ -1,6 +1,12 @@
 # FSheets UI
 
-User interface for FSheets, the spreadsheet application that is better.
+User interface for FSheets, the spreadsheet application that is better.  
+
+Version `v0.1` of FSheets demonstrates the ability to parse a table schema from the [FSheets DDL](./implementation_details/ddl.md) and validate input against it.  
+
+## Try FSheets
+
+Currently, the only way to try FSheets is by cloning the repository and running it with Flutter.
 
 ## Motivation
 
