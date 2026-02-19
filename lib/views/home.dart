@@ -3,7 +3,7 @@ import 'package:fsheets/components/app_scaffold.dart';
 import 'package:fsheets/components/typed_text_field.dart';
 import 'package:fsheets/components/util.dart';
 import 'package:fsheets/logic/data_type.dart';
-import 'package:fsheets/logic/ddl.dart';
+import 'package:fsheets/logic/ffi.dart';
 import 'package:fsheets/views/table_form.dart';
 
 class HomeView extends StatefulWidget {
@@ -42,8 +42,10 @@ class _HomeViewState extends State<HomeView> {
               label: Text("Generate form"),
               icon: Icon(Icons.arrow_forward),
               onPressed: () {
-                final tableSchema = parseTableSchema(schemaController.text);
-                if (tableSchema != null) {
+                try {
+                  final schema = parseSchema(schemaController.text);
+                  final tableSchema = schema.tables.elementAt(0);
+
                   setState(() {
                     isValid = true;
                   });
@@ -52,7 +54,7 @@ class _HomeViewState extends State<HomeView> {
                       builder: (context) => TableFormView(schema: tableSchema),
                     ),
                   );
-                } else {
+                } catch (e) {
                   setState(() {
                     isValid = false;
                   });

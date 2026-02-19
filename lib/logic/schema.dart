@@ -3,6 +3,30 @@ library;
 
 import 'package:fsheets/logic/data_type.dart';
 
+class SpreadsheetSchema {
+  final String spreadsheetName;
+  final List<TableSchema> tables;
+
+  const SpreadsheetSchema({
+    required this.spreadsheetName,
+    required this.tables,
+  });
+
+  factory SpreadsheetSchema.fromJson(Map<String, dynamic> json) =>
+      SpreadsheetSchema(
+        spreadsheetName: json['ss_name'],
+        tables: (json['tables'] as List<dynamic>)
+            .map(
+              (tableJson) =>
+                  TableSchema.fromJson(tableJson as Map<String, dynamic>),
+            )
+            .toList(),
+      );
+
+  @override
+  String toString() => tables.join(";\n");
+}
+
 /// A table schema stores information about a table, including the table name,
 /// column schemas, and constraint schemas.
 class TableSchema {
@@ -15,6 +39,16 @@ class TableSchema {
     required this.columns,
     this.constraints,
   });
+
+  factory TableSchema.fromJson(Map<String, dynamic> json) => TableSchema(
+    tableName: json['table_name'] as String,
+    columns: (json['columns'] as List<dynamic>)
+        .map(
+          (columnJson) =>
+              ColumnSchema.fromJson(columnJson as Map<String, dynamic>),
+        )
+        .toList(),
+  );
 
   @override
   String toString() =>
@@ -74,21 +108,27 @@ class PKConstraintSchema extends UniqueConstraintSchema {
 /// applicable.
 class ColumnSchema<T> {
   final String columnName;
-  final DataType<T> dataType;
+  final DataType<T> columnType;
   final T? defaultValue;
 
   ColumnSchema({
     required this.columnName,
-    required this.dataType,
+    required this.columnType,
     this.defaultValue,
   });
+
+  static ColumnSchema fromJson(Map<String, dynamic> json) => ColumnSchema(
+    columnName: json["column_name"],
+    columnType: DataType.fromJson(json["column_type"]),
+    defaultValue: json["default_value"],
+  );
 
   /// Convert a column schema to a string using the FSheets schema
   /// syntax.
   @override
   String toString() => defaultValue == null
-      ? "$columnName:$dataType"
+      ? "$columnName:$columnType"
       : defaultValue is String
-      ? "$columnName:$dataType=\"$defaultValue\""
-      : "$columnName:$dataType=$defaultValue";
+      ? "$columnName:$columnType=\"$defaultValue\""
+      : "$columnName:$columnType=$defaultValue";
 }

@@ -23,9 +23,22 @@ abstract class DataType<T> {
   /// Constructor
   const DataType({required this.nullable});
 
+  static DataType fromJson(Map<String, dynamic> json) {
+    switch (json["super"] as String) {
+      case "int":
+        return IntDataType.fromJson(json);
+      case "dbl":
+        return DblDataType.fromJson(json);
+      case "str":
+        return StringDataType.fromJson(json);
+      default:
+        throw Exception("Unrecognised super type ${json["super"]}");
+    }
+  }
+
   /// Getter to a function to parse this data type.
   ///
-  /// **Example**: the [IntegerDataType] class, which extends the [DataType]
+  /// **Example**: the [IntDataType] class, which extends the [DataType]
   /// class through the [NumericDataType] class, has the parse function
   /// [int.tryParse].
   ///
@@ -110,6 +123,12 @@ class StringDataType extends DataType<String> {
 
   const StringDataType({required super.nullable, this.minLen, this.maxLen});
 
+  factory StringDataType.fromJson(Map<String, dynamic> json) => StringDataType(
+    nullable: json["nullable"] as bool,
+    minLen: json['min'] as int?,
+    maxLen: json['max'] as int?,
+  );
+
   @override
   String get typeName => stringTypeName;
 
@@ -186,8 +205,14 @@ abstract class NumericDataType<T extends num> extends DataType<T> {
 }
 
 /// The FSheets integer data type is a wrapper around Dart's [int] type.
-class IntegerDataType extends NumericDataType<int> {
-  const IntegerDataType({required super.nullable, super.min, super.max});
+class IntDataType extends NumericDataType<int> {
+  const IntDataType({required super.nullable, super.min, super.max});
+
+  factory IntDataType.fromJson(Map<String, dynamic> json) => IntDataType(
+    nullable: json["nullable"] as bool,
+    min: json['min'] as int?,
+    max: json['max'] as int?,
+  );
 
   @override
   String get typeName => intTypeName;
@@ -197,15 +222,21 @@ class IntegerDataType extends NumericDataType<int> {
 
   @override
   bool operator ==(Object other) =>
-      (other is IntegerDataType && min == other.min && max == other.max);
+      (other is IntDataType && min == other.min && max == other.max);
 
   @override
   int get hashCode => Object.hash(super.hashCode, min, max);
 }
 
 /// The FSheets double data type is a wrapper around Dart's [double] type.
-class DoubleDataType extends NumericDataType<double> {
-  const DoubleDataType({required super.nullable, super.min, super.max});
+class DblDataType extends NumericDataType<double> {
+  const DblDataType({required super.nullable, super.min, super.max});
+
+  factory DblDataType.fromJson(Map<String, dynamic> json) => DblDataType(
+    nullable: json["nullable"] as bool,
+    min: json['min'] as double?,
+    max: json['max'] as double?,
+  );
 
   @override
   String get typeName => doubleTypeName;

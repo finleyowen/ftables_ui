@@ -18,10 +18,10 @@ class TypedTextField<T extends DataType> extends StatelessWidget {
   });
 
   static TypedTextField? fromColumnSchema(ColumnSchema columnSchema) {
-    switch (columnSchema.dataType) {
-      case IntegerDataType _:
+    switch (columnSchema.columnType) {
+      case IntDataType _:
         return IntegerTextField(
-          dataType: columnSchema.dataType as IntegerDataType,
+          dataType: columnSchema.columnType as IntDataType,
           labelText: columnSchema.columnName,
           controller: TextEditingController(
             text: columnSchema.defaultValue != null
@@ -29,9 +29,9 @@ class TypedTextField<T extends DataType> extends StatelessWidget {
                 : "",
           ),
         );
-      case DoubleDataType _:
+      case DblDataType _:
         return DoubleTextField(
-          dataType: columnSchema.dataType as DoubleDataType,
+          dataType: columnSchema.columnType as DblDataType,
           labelText: columnSchema.columnName,
           controller: TextEditingController(
             text: columnSchema.defaultValue != null
@@ -41,7 +41,7 @@ class TypedTextField<T extends DataType> extends StatelessWidget {
         );
       case StringDataType _:
         return StringTextField(
-          dataType: columnSchema.dataType as StringDataType,
+          dataType: columnSchema.columnType as StringDataType,
           labelText: columnSchema.columnName,
           controller: TextEditingController(
             text: columnSchema.defaultValue != null
@@ -50,7 +50,7 @@ class TypedTextField<T extends DataType> extends StatelessWidget {
           ),
         );
     }
-    return TypedTextField(dataType: columnSchema.dataType, labelText: "");
+    return TypedTextField(dataType: columnSchema.columnType, labelText: "");
   }
 
   @override
@@ -65,7 +65,7 @@ class TypedTextField<T extends DataType> extends StatelessWidget {
   );
 }
 
-class IntegerTextField extends TypedTextField<IntegerDataType> {
+class IntegerTextField extends TypedTextField<IntDataType> {
   const IntegerTextField({
     super.key,
     required super.dataType,
@@ -79,7 +79,7 @@ class IntegerTextField extends TypedTextField<IntegerDataType> {
   ];
 }
 
-class DoubleTextField extends TypedTextField<DoubleDataType> {
+class DoubleTextField extends TypedTextField<DblDataType> {
   const DoubleTextField({
     super.key,
     required super.dataType,
