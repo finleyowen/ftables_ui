@@ -168,7 +168,7 @@ class StringDataType extends DataType<String> {
   @override
   String toString() => (minLen == null && maxLen == null)
       ? super.toString()
-      : "${super.toString()}<${minLen ?? ""};${maxLen ?? ""}>";
+      : "${super.toString()}<${minLen ?? ""},${maxLen ?? ""}>";
 }
 
 /// Implements functionality shared between concrete numeric data types
@@ -201,7 +201,7 @@ abstract class NumericDataType<T extends num> extends DataType<T> {
   @override
   String toString() => (min == null && max == null)
       ? super.toString()
-      : "${super.toString()}<${min ?? ""};${max ?? ""}>";
+      : "${super.toString()}<${min ?? ""},${max ?? ""}>";
 }
 
 /// The FSheets integer data type is a wrapper around Dart's [int] type.

@@ -54,14 +54,16 @@ class TypedTextField<T extends DataType> extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) => TextFormField(
-    controller: controller,
-    decoration: InputDecoration(
-      labelText: labelText,
-      hintText: dataType.toString(),
+  Widget build(BuildContext context) => Material(
+    child: TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: labelText,
+        hintText: dataType.toString(),
+      ),
+      validator: dataType.validate,
+      inputFormatters: inputFormatters,
     ),
-    validator: dataType.validate,
-    inputFormatters: inputFormatters,
   );
 }
 

@@ -12,7 +12,9 @@ typedef FreeStringDart = void Function(Pointer<Utf8>);
 final dylib = DynamicLibrary.open("ftables_ffi/target/release/ftable_ffi.dll");
 
 final compileSchema = dylib
-    .lookupFunction<CompileSchemaNative, CompileSchemaDart>("compile_schema");
+    .lookupFunction<CompileSchemaNative, CompileSchemaDart>(
+      "compile_schema_unsafe",
+    );
 final freeStr = dylib.lookupFunction<FreeStringNative, FreeStringDart>(
   "free_str",
 );
@@ -28,13 +30,9 @@ SpreadsheetSchema parseSchema(String s) {
 
   final json = jsonDecode(jsonStr);
 
+  if (json["err"] != null) {
+    throw Exception(json["err"]);
+  }
+
   return SpreadsheetSchema.fromJson(json);
-}
-
-void main() {
-  final schema = parseSchema(
-    "table T1(a: int);table T2(b: dbl);table T3(c: str);",
-  );
-
-  print(schema.toString());
 }

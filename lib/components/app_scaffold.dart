@@ -7,16 +7,19 @@ class AppScaffold extends StatelessWidget {
   final Widget? body;
   final Widget? floatingActionButton;
   final FloatingActionButtonLocation? floatingActionButtonLocation;
+  final Widget? drawer;
 
   const AppScaffold({
     super.key,
     this.body,
     this.floatingActionButton,
     this.floatingActionButtonLocation,
+    this.drawer,
   });
 
   @override
   Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(),
     body: Center(
       child: ConstrainedBox(
         constraints: BoxConstraints(maxWidth: 800),
@@ -25,5 +28,6 @@ class AppScaffold extends StatelessWidget {
     ),
     floatingActionButton: floatingActionButton,
     floatingActionButtonLocation: floatingActionButtonLocation,
+    drawer: drawer,
   );
 }
