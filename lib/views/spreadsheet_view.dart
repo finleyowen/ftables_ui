@@ -6,7 +6,7 @@ import 'package:fsheets/views/home.dart';
 
 class SpreadsheetView extends StatelessWidget {
   final SpreadsheetSchema schema;
-  final ValueNotifier<int> openTableIndex = ValueNotifier(0);
+  late final ValueNotifier<int> openTableIndex = ValueNotifier(0);
 
   SpreadsheetView({super.key, required this.schema});
 
@@ -15,7 +15,10 @@ class SpreadsheetView extends StatelessWidget {
     return ValueListenableBuilder(
       valueListenable: openTableIndex,
       builder: (context, value, child) => AppScaffold(
-        body: TableFormView(schema: schema.tables[value]),
+        body: TableFormView(
+          tableName: schema.tableNames[value],
+          tableSchema: schema.tables[schema.tableNames[value]]!,
+        ),
         drawer: SpreadsheetTableNav(
           schema: schema,
           openTableIndex: openTableIndex,
@@ -53,14 +56,14 @@ class SpreadsheetTableNav extends StatelessWidget {
       Padding(
         padding: EdgeInsetsGeometry.all(10),
         child: Text(
-          schema.spreadsheetName,
+          "Spreadsheet",
           style: Theme.of(context).textTheme.titleSmall,
         ),
       ),
-      ...schema.tables.map(
-        (table) => NavigationDrawerDestination(
+      ...schema.tables.entries.map(
+        (entry) => NavigationDrawerDestination(
           icon: Icon(Icons.abc),
-          label: Text(table.tableName),
+          label: Text(entry.key),
         ),
       ),
       Divider(),
@@ -73,10 +76,15 @@ class SpreadsheetTableNav extends StatelessWidget {
 }
 
 class TableFormView extends StatelessWidget {
-  final TableSchema schema;
+  final TableSchema tableSchema;
+  final String tableName;
   final formKey = GlobalKey<FormState>();
 
-  TableFormView({super.key, required this.schema});
+  TableFormView({
+    super.key,
+    required this.tableSchema,
+    required this.tableName,
+  });
 
   @override
   Widget build(BuildContext context) => Form(
@@ -86,14 +94,14 @@ class TableFormView extends StatelessWidget {
       children: [
         Row(
           children: [
-            Text(
-              schema.tableName,
-              style: Theme.of(context).textTheme.headlineLarge,
-            ),
+            Text(tableName, style: Theme.of(context).textTheme.headlineLarge),
           ],
         ),
-        for (final column in schema.columns)
-          TypedTextField.fromColumnSchema(column)!,
+        for (final columnName in tableSchema.columnNames)
+          TypedTextField.fromColumnSchema(
+            tableSchema.columns[columnName]!,
+            columnName,
+          )!,
         Row(
           children: [
             FloatingActionButton.extended(

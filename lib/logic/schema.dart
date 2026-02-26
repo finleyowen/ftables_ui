@@ -1,58 +1,64 @@
 /// Schema logic library
 library;
 
+import 'dart:collection';
+
 import 'package:fsheets/logic/data_type.dart';
 
 class SpreadsheetSchema {
-  final String spreadsheetName;
-  final List<TableSchema> tables;
+  final HashMap<String, TableSchema> tables;
+  final List<String> tableNames;
 
-  const SpreadsheetSchema({
-    required this.spreadsheetName,
-    required this.tables,
-  });
+  const SpreadsheetSchema({required this.tables, required this.tableNames});
 
-  factory SpreadsheetSchema.fromJson(Map<String, dynamic> json) =>
-      SpreadsheetSchema(
-        spreadsheetName: json['ss_name'],
-        tables: (json['tables'] as List<dynamic>)
-            .map(
-              (tableJson) =>
-                  TableSchema.fromJson(tableJson as Map<String, dynamic>),
-            )
-            .toList(),
-      );
+  factory SpreadsheetSchema.fromJson(Map<String, dynamic> json) {
+    final tables = (json["tables"] as Map<String, dynamic>).map(
+      (k, v) => MapEntry(k, TableSchema.fromJson(v)),
+    );
+    final tableNames = (json["tables"] as Map<String, dynamic>).keys.toList();
+    return SpreadsheetSchema(
+      tables: HashMap.fromEntries(tables.entries),
+      tableNames: tableNames,
+    );
+  }
 
+  // todo
   @override
-  String toString() => tables.join(";\n");
+  String toString() => "";
 }
 
 /// A table schema stores information about a table, including the table name,
 /// column schemas, and constraint schemas.
 class TableSchema {
-  final String tableName;
-  final List<ColumnSchema> columns;
+  final HashMap<String, ColumnSchema> columns;
+  final List<String> columnNames;
   final List<ConstraintSchema>? constraints;
 
   const TableSchema({
-    required this.tableName,
     required this.columns,
+    required this.columnNames,
     this.constraints,
   });
 
-  factory TableSchema.fromJson(Map<String, dynamic> json) => TableSchema(
-    tableName: json['table_name'] as String,
-    columns: (json['columns'] as List<dynamic>)
-        .map(
-          (columnJson) =>
-              ColumnSchema.fromJson(columnJson as Map<String, dynamic>),
-        )
-        .toList(),
-  );
+  factory TableSchema.fromJson(Map<String, dynamic> json) {
+    final columns = json['columns'] as Map<String, dynamic>;
+    return TableSchema(
+      columns: HashMap.fromEntries(
+        columns.map((k, v) => MapEntry(k, ColumnSchema.fromJson(v))).entries,
+      ),
+      columnNames: columns.keys.toList(),
+    );
+  }
 
   @override
-  String toString() =>
-      "$tableName(${columns.join(",")}${constraints != null ? ",${constraints!.join(",")}" : ""})";
+  String toString() {
+    // note columnStrs (column strings) vs columnsStr (columns string)
+    final columnStrs = columns.keys.map(
+      (columnName) => "$columnName: ${columns[columnName].toString()}",
+    );
+    final columnsStr = columnStrs.join(", ");
+    return "($columnsStr)";
+  }
 }
 
 /// Abstract parent class of [UniqueConstraintSchema] and [FKConstraintSchema].
@@ -107,18 +113,12 @@ class PKConstraintSchema extends UniqueConstraintSchema {
 /// type of data it stores and its nullability, and the default value if
 /// applicable.
 class ColumnSchema<T> {
-  final String columnName;
   final DataType<T> columnType;
   final T? defaultValue;
 
-  ColumnSchema({
-    required this.columnName,
-    required this.columnType,
-    this.defaultValue,
-  });
+  ColumnSchema({required this.columnType, this.defaultValue});
 
   static ColumnSchema fromJson(Map<String, dynamic> json) => ColumnSchema(
-    columnName: json["column_name"],
     columnType: DataType.fromJson(json["column_type"]),
     defaultValue: json["default_value"],
   );
@@ -127,8 +127,8 @@ class ColumnSchema<T> {
   /// syntax.
   @override
   String toString() => defaultValue == null
-      ? "$columnName:$columnType"
+      ? "$columnType"
       : defaultValue is String
-      ? "$columnName:$columnType=\"$defaultValue\""
-      : "$columnName:$columnType=$defaultValue";
+      ? "$columnType=\"$defaultValue\""
+      : "$columnType=$defaultValue";
 }

@@ -2,11 +2,13 @@
 
 User interface for FTables, the spreadsheet application that is better.  
 
-Version `v0.2` of FTables demonstrates the ability to parse a table schema from the FTables DDL [using Rust](http://github.com/finleyowen/ftables_lib) and validate input against it.
+Version `v0.2.0` of FTables demonstrates the ability to parse a set of table schemas from the FTables DDL [using Rust](http://github.com/finleyowen/ftables_lib) and validate input against it.
 
 ## Try FTables
 
-Currently, the only way to try FTables is by cloning the repository and running it with Flutter.
+Currently, the only way to try FTables is by cloning the repository and running it with Flutter. This requires:
+- [Dart](https://dart.dev/) and [Flutter](flutter.dev)
+- [Rust and Cargo](https://rust-lang.org/)
 
 ## Motivation
 

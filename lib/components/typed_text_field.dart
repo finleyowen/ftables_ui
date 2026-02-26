@@ -17,12 +17,15 @@ class TypedTextField<T extends DataType> extends StatelessWidget {
     this.controller,
   });
 
-  static TypedTextField? fromColumnSchema(ColumnSchema columnSchema) {
+  static TypedTextField? fromColumnSchema(
+    ColumnSchema columnSchema,
+    String columnName,
+  ) {
     switch (columnSchema.columnType) {
       case IntDataType _:
         return IntegerTextField(
           dataType: columnSchema.columnType as IntDataType,
-          labelText: columnSchema.columnName,
+          labelText: columnName,
           controller: TextEditingController(
             text: columnSchema.defaultValue != null
                 ? columnSchema.defaultValue.toString()
@@ -32,7 +35,7 @@ class TypedTextField<T extends DataType> extends StatelessWidget {
       case DblDataType _:
         return DoubleTextField(
           dataType: columnSchema.columnType as DblDataType,
-          labelText: columnSchema.columnName,
+          labelText: columnName,
           controller: TextEditingController(
             text: columnSchema.defaultValue != null
                 ? columnSchema.defaultValue.toString()
@@ -42,7 +45,7 @@ class TypedTextField<T extends DataType> extends StatelessWidget {
       case StringDataType _:
         return StringTextField(
           dataType: columnSchema.columnType as StringDataType,
-          labelText: columnSchema.columnName,
+          labelText: columnName,
           controller: TextEditingController(
             text: columnSchema.defaultValue != null
                 ? columnSchema.defaultValue.toString()

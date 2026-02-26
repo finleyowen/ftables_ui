@@ -132,7 +132,6 @@ class StringDataType extends DataType<String> {
   @override
   String get typeName => stringTypeName;
 
-  /// Parse function that accepts
   @override
   String? Function(String) get parseFn => ((val) => val);
 

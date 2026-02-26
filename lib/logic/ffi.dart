@@ -29,6 +29,7 @@ SpreadsheetSchema parseSchema(String s) {
   freeStr(jsonPtr);
 
   final json = jsonDecode(jsonStr);
+  print(json);
 
   if (json["err"] != null) {
     throw Exception(json["err"]);
