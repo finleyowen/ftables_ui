@@ -1,8 +1,12 @@
 /// Data type logic library
+///
+/// Defines Dart classes to represent FTables data types.
+///
+/// Copyright Finley Owen 2026. All rights reserved.
 library;
 
 const intTypeName = "int";
-const doubleTypeName = "double";
+const doubleTypeName = "dbl";
 const stringTypeName = "str";
 
 const intPat = r"\-?[0-9]+";
@@ -11,7 +15,7 @@ const doublePat = r"\-?[0-9\.]+";
 /// Enum representing the possible outcomes of an existence check.
 enum NullState { legallyNull, illegallyNull, notNull }
 
-/// A FSheets data type is implemented as a wrapper around a Dart type [T].
+/// A FSheets data type corresponding to a Dart type [T].
 ///
 /// The abstract [DataType] class defines information about a FSheets
 /// data type.
@@ -114,7 +118,7 @@ abstract class DataType<T> {
   int get hashCode => Object.hash(nullable, parseFn, typeName);
 }
 
-/// The FSheets string data type is a wrapper around Dart's [String] type.
+/// The FSheets `str` data type wraps around Dart's [String] type.
 class StringDataType extends DataType<String> {
   // Minimum length of strings accepted by the data type.
   final int? minLen;

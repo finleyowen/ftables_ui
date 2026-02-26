@@ -1,4 +1,8 @@
-/// Main library
+/// FTables UI main library
+///
+/// Defines the program entry point and the [MainApp] widget.
+///
+/// Copyright Finley Owen 2026. All rights reserved.
 library;
 
 import 'package:flutter/material.dart';

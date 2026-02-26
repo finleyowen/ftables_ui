@@ -1,3 +1,10 @@
+/// Utility component library
+///
+/// Miscellaneous components used in the FTables UI.
+///
+/// Copyright Finley Owen 2026. All rights reserved.
+library;
+
 import 'package:flutter/material.dart';
 
 class PaddedRow extends StatelessWidget {

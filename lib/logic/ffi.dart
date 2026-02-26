@@ -1,3 +1,11 @@
+/// FFI logic library
+///
+/// Interacts with the shared library compiled from
+/// [ftables_ffi](http://github.com/finleyowen/ftables_ffi).
+///
+/// Copyright Finley Owen 2026. All rights reserved.
+library;
+
 import 'dart:convert';
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
@@ -29,7 +37,6 @@ SpreadsheetSchema parseSchema(String s) {
   freeStr(jsonPtr);
 
   final json = jsonDecode(jsonStr);
-  print(json);
 
   if (json["err"] != null) {
     throw Exception(json["err"]);

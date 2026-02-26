@@ -1,4 +1,9 @@
 /// App scaffold module
+///
+/// Defines the [AppScaffold] widget that leverages and behaves similarly to
+/// [Scaffold], but is customised for the application.
+///
+/// Copyright Finley Owen 2026. All rights reserved.
 library;
 
 import "package:flutter/material.dart";

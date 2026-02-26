@@ -1,3 +1,10 @@
+/// Home view library
+///
+/// Defines the [HomeView] class and its state.
+///
+/// Copyright Finley Owen 2026. All rights reserved.
+library;
+
 import 'package:flutter/material.dart';
 import 'package:fsheets/components/app_scaffold.dart';
 import 'package:fsheets/components/util.dart';

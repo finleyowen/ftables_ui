@@ -1,3 +1,14 @@
+/// Typed inputs module
+///
+/// Defines widgets that allow the application to recieve and validate input
+/// of data types supported by FTables.
+///
+/// Many of these widgets extend the abstract class [TypedTextField] which is
+/// also defined here.
+///
+/// Copyright Finley Owen 2026. All rights reserved.
+library;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fsheets/logic/data_type.dart';

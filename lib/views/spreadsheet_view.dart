@@ -1,6 +1,13 @@
+/// Spreadsheet view module
+///
+/// Defines the [SpreadsheetView] and related components.
+///
+/// Copyright Finley Owen 2026. All rights reserved.
+library;
+
 import 'package:flutter/material.dart';
 import 'package:fsheets/components/app_scaffold.dart';
-import 'package:fsheets/components/typed_text_field.dart';
+import 'package:fsheets/components/typed_inputs.dart';
 import 'package:fsheets/logic/schema.dart';
 import 'package:fsheets/views/home.dart';
 

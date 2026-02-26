@@ -1,4 +1,9 @@
 /// Schema logic library
+///
+/// Defines Dart classes representing column, table, constraint and spreadsheet
+/// schemas.
+///
+/// Copyright Finley Owen 2026. All rights reserved.
 library;
 
 import 'dart:collection';
